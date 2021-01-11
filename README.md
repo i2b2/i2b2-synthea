@@ -1,1 +1,3 @@
 # i2b2-synthea
+
+A new version of these data are being developed. At present, there are three pairs of files. Each corresponds to a group of fake patients with Synthea data. First, set up an [i2b2 project with the ACT ontology](https://community.i2b2.org/wiki/display/RM/1.7.12a+Release+Notes#id-1.7.12aReleaseNotes-act-ontolog). Then extract and append the obs file into the observation_fact table and the obs-pat file into the patient dimension table, with your favorite db import tool. These files have been converted into i2b2-ACT format from the [SyntheticMass Synthea data set](https://synthea.mitre.org/downloads).
