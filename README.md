@@ -7,5 +7,7 @@
 3) Run `create_synthea_table_sqlserver.sql` in your project to create the Synthea tables.
 4) Import the Synthea data you downloaded in step one into the Synthea tables in your project.
 5) Load the i2b2-to-SNOMED table in this repository into your project. https://www.nlm.nih.gov/healthit/snomedct/us_edition.html
-7) Run the script in this repository to convert synthea data into i2b2 tables (this will truncate your existing fact and dimension tables!)
+7) Run `synthea_to_i2b2_sqlserver.sql` to convert synthea data into i2b2 tables (this will truncate your existing fact and dimension tables!)
+   * Replace references to `i2b2metadata.dbo` in the script. Use the database and schema where your ACT ontology tables are.
+
 
