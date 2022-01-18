@@ -68,8 +68,11 @@ truncate table patient_dimension;
 
  insert into patient_dimension (patient_num, vitAL_Status_cd, birth_date,death_date, sex_cd, age_in_years_num, race_cd, MARITAL_STATUS_CD,
 zip_cd, statecityzip_path,  update_date, download_date, import_date, sourcesystem_cd)
-select distinct a.patient_num, case when b.deathdate = '1899-12-30' OR b.deathdate is null then 'A' else 'D' end, b.birthdate,
-case when b.deathdate = '1899-12-30' OR b.deathdate is null then null else b.deathdate end, b.gender,
+
+select distinct a.patient_num,
+case when b.deathdate is not null then 'D' else 'A' end,
+b.birthdate,
+case when b.deathdate is null then null else b.deathdate end, b.gender,
 DATEDIFF(hour,b.birthdate,
 case when b.deathdate = '1899-12-30' OR b.deathdate is null then getdate() else b.deathdate end
 
@@ -101,6 +104,7 @@ where a.encounter_ide = c.id
 and a.patient_ide = b.patient_ide
 and c.organization = d.id
 
+truncate table provider_dimension
 insert into provider_dimension (provider_id, provider_path, name_char,  update_date, download_date, import_date, sourcesystem_cd)
 SELECT distinct a.Id
       , b.name +' / ' + b.address + ' / '+ b.state + ' / ' + b.zip
@@ -554,7 +558,7 @@ DECLARE @sqltext NVARCHAR(4000);
 declare getsql cursor local for
 select 'insert into concept_dimension select c_dimcode AS concept_path, c_basecode AS concept_cd, c_name AS name_char, null AS concept_blob, update_date AS update_date, download_date as download_date, import_date as import_date, sourcesystem_cd as sourcesystem_cd, 1 as upload_id from '
 +c_table_name+' where m_applied_path=''@'' and c_tablename=''CONCEPT_DIMENSION'' and c_columnname=''concept_path'' and c_visualattributes not like ''%I%'' and (c_columndatatype=''T'' or c_columndatatype=''N'') and c_synonym_cd = ''N'' and (m_exclusion_cd is null or m_exclusion_cd='''') and c_basecode is not null and c_basecode!='''''
-from i2b2metadata.dbo.TABLE_ACCESS where c_visualattributes like '%A%'
+from TABLE_ACCESS where c_visualattributes like '%A%'
 
 begin
 delete from concept_dimension;
