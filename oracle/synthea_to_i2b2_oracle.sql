@@ -332,7 +332,7 @@ row_number() over (partition by  a.encounter_num, ''@'',c.code, ''@'',c.date_ob
 order by  a.encounter_num, b.patient_num, c.code,c.date_ob),
 case when c.type = ''numeric'' then ''N'' else ''T'' end as valtype_cd,
 case when c.type = ''text'' then cast(c.value as varchar2(1000)) else ''E'' end as tval_char,
-case when c.type = ''numeric'' then cast(c.value as varchar2(1000)) else null end as nval_num,
+case when c.type = ''numeric'' then cast(c.value as decimal) else null end as nval_num,
 case when c.type = ''numeric'' then ''@'' else null end as valueflag_cd,
 c.units,
 ''1'',
@@ -616,8 +616,7 @@ and c.encounter = d.id';
     dbms_output.put_line('updating length of stay');
     UPDATE visit_dimension
     SET
-        length_of_stay = trunc(((start_date - end_date) * 24) / 8766);
-
+         length_of_stay = trunc(to_date(end_date)-to_date(start_date));
     COMMIT;
 EXCEPTION
     WHEN OTHERS THEN
