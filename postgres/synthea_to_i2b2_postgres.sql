@@ -1,3 +1,42 @@
+/*Loading synthea files into synthea_tables
+synthea tables require data for DATE column to be in DATE format
+When importing synthea files with date column format YYYY-MM-DD"T"HH24:MI:SS"Z",
+--first import the file into temp table with date column datatype varchar
+--Then, load the imported temp table data  into synthea tables using date formatted insert statement
+Below are example statements you can use for importing to synthea  tables
+Replace the <temp table> with the name of the temp table you have used for importing synthea file*/
+/*
+insert into synthea_immunizations
+select to_char(to_date(date_IM,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT,ENCOUNTER,CODE,DESCRIPTION,BASE_COST
+FROM <temp table>
+INSERT INTO SYNTHEA_DEVICES
+select to_char(to_date(START_DEV,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+to_char(to_date(STOP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT,ENCOUNTER,CODE,DESCRIPTION,UDI from <temp table>
+INSERT INTO Synthea_Medications
+select to_char(to_date(START_MED,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+to_char(to_date(STOP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT,PAYER,
+ENCOUNTER,CODE ,DESCRIPTION,BASE_COST,PAYER_COVERAGE,DISPENSES,TOTALCOST,REASONCODE,REASONDESCRIPTION FROM <temp table>
+INSERT INTO Synthea_conditions
+select to_char(to_date(START_CON,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+to_char(to_date(STOP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT,ENCOUNTER,CODE,DESCRIPTION from <temp table>
+INSERT INTO SYNTHEA_PROCEDURES 
+select to_char(to_date(DATE_PROC,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+PATIENT,ENCOUNTER,CODE,DESCRIPTION,BASE_COST,REASONCODE,REASONDESCRIPTION from <temp table>
+INSERT INTO SYNTHEA_CAREPLANS
+select Id, to_char(to_date(START_CP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+to_char(to_date(STOP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT,ENCOUNTER,CODE,DESCRIPTION,REASONCODE,        REASONDESCRIPTION from <temp table>
+INSERT INTO SYNTHEA_ENCOUNTERS
+select Id,to_char(to_date(START_ENC,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+to_char(to_date(STOP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT,ORGANIZATION,PROVIDER,PAYER,ENCOUNTERCLASS,CODE,DESCRIPTION,
+BASE_ENCOUNTER_COST,TOTAL_CLAIM_COST,PAYER_COVERAGE,REASONCODE,REASONDESCRIPTION from <temp table>
+INSERT INTO Synthea_observations
+ select to_char(to_date(DATE_OB,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+PATIENT, ENCOUNTER,CODE,DESCRIPTION,VALUE,UNITS,TYPE from <temp table>
+INSERT INTO Synthea_allergies
+select to_char(to_date(START_AL,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,
+to_char(to_date(STOP,'YYYY-MM-DD"T"HH24:MI:SS"Z"'),'YYYY-MM-DD')::date,PATIENT, ENCOUNTER,CODE,DESCRIPTION from <temp table>
+*/
+
 create or replace
 function public.synthea_to_i2b2_postgres(out errormsg text)
 returns text
